@@ -15,6 +15,7 @@ app.use(express.json());
 app.use('/users/nominate', require('./nominations/nominate'));
 app.use('/users/nominate', require('./nominations/getNominees'));
 app.use('/users/nominate', require('./nominations/clearData'));
+app.use('/users/signup', require('./authentication/signup'));
 
 
 app.get('/', (req, res) => {
