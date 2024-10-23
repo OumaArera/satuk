@@ -1,0 +1,32 @@
+{
+  "name": "satuk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+  "start": "node app.js",
+  "dev": "nodemon app.js"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OumaArera/satuk.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OumaArera/satuk/issues"
+  },
+  "homepage": "https://github.com/OumaArera/satuk#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "pg": "^8.13.0",
+    "sequelize": "^6.37.4",
+    "sequelize-cli": "^6.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
