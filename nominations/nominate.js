@@ -32,7 +32,7 @@ const categories = [
     "The_Service_Provider_of_the_Year_Award",
     "The_Environment_Advocate_of_the_Year_Award",
     "The_PWDs_Advocate_of_the_Year_Award",
-    "The_Volunteer_of_the_Year_Award",
+    "The_Commitment_to_Service_Award",
     "Indoor_Games_Sports_Team_of_the_Year_Award",
     "Outdoor_Games_Sports_Team_of_the_Year_Award",
     "Indoor_Games_Sports_Person_of_the_Year_Award",

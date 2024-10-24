@@ -22,6 +22,7 @@ app.use('/users/ticket', require('./tickets/updateTicket'));
 app.use('/users/ticket', require('./tickets/pendingTickets'));
 app.use('/users/tickets', require('./tickets/paidTickets'));
 app.use('/users/my-tickets', require('./tickets/myTickets'));
+app.use('/users/decline-ticket', require('./tickets/declineTicket'));
 
 
 app.get('/', (req, res) => {
