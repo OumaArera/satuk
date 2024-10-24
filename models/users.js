@@ -1,26 +1,39 @@
+'use strict';
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
-    const User = sequelize.define('User', {
-        name: {
-            type: DataTypes.STRING,
-            allowNull: false, 
+    class User extends Model {
+        static associate(models) {
+          User.hasMany(models.Ticket, { foreignKey: 'userId', as: 'tickets' });
+        }
+    }
+
+    User.init({
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+          isEmail: true,
         },
-        email: {
-            type: DataTypes.STRING,
-            allowNull: false, 
-            unique: true, 
-        },
-        password: {
-            type: DataTypes.STRING,
-            allowNull: false, 
-        },
-        type: {
-            type: DataTypes.ENUM('admin', 'standard'), 
-            defaultValue: 'standard', 
-        },
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      type: {
+        type: DataTypes.ENUM('admin', 'standard'),
+        defaultValue: 'standard',
+      },
     }, {
-        // Additional model options
-        tableName: 'Users', 
-        timestamps: true, 
+      sequelize,
+      modelName: 'User',
+      tableName: 'Users',
+      timestamps: true,
     });
 
     return User;

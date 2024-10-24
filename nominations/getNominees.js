@@ -1,10 +1,11 @@
 const express = require('express');
 const db = require('../models');  
 require('dotenv').config();
+const authenticateToken = require("../authentication/authenticate");
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         // Fetch nominees along with their votes and nominators
         const nominationsData = await db.Nominees.findAll({

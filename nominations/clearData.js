@@ -1,9 +1,10 @@
 const express = require('express');
 const db = require('../models');  
 const router = express.Router();
+const authenticateToken = require("../authentication/authenticate");
 
 // Route to delete all data in Nominator, Nominees, and Votes tables
-router.delete('/', async (req, res) => {
+router.delete('/', authenticateToken, async (req, res) => {
     try {
         // Truncate Votes, Nominees, and Nominator tables using CASCADE
         await db.sequelize.query('TRUNCATE "Votes", "Nominees", "Nominators" CASCADE');

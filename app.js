@@ -16,10 +16,16 @@ app.use('/users/nominate', require('./nominations/nominate'));
 app.use('/users/nominate', require('./nominations/getNominees'));
 app.use('/users/nominate', require('./nominations/clearData'));
 app.use('/users/signup', require('./authentication/signup'));
+app.use('/users/login', require('./authentication/login'));
+app.use('/users/ticket', require('./tickets/book'));
+app.use('/users/ticket', require('./tickets/updateTicket'));
+app.use('/users/ticket', require('./tickets/pendingTickets'));
+app.use('/users/tickets', require('./tickets/paidTickets'));
+app.use('/users/my-tickets', require('./tickets/myTickets'));
 
 
 app.get('/', (req, res) => {
-  res.send('Hello, World! Odedo');
+  res.send('Hello, World!');
 });
 
 db.sequelize.sync().then(() => {
