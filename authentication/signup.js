@@ -62,7 +62,7 @@ router.post('/', async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            type: 'admin', 
+            type: 'standard', 
         });
 
         // Generate a JWT token
