@@ -19,6 +19,7 @@ app.use('/users/signup', require('./authentication/signup'));
 app.use('/users/login', require('./authentication/login'));
 app.use('/users/ticket', require('./tickets/book'));
 app.use('/users/ticket', require('./tickets/updateTicket'));
+app.use('/users/ticket', require('./tickets/clearTickets'));
 app.use('/users/ticket', require('./tickets/pendingTickets'));
 app.use('/users/tickets', require('./tickets/paidTickets'));
 app.use('/users/my-tickets', require('./tickets/myTickets'));
