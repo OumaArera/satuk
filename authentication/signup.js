@@ -9,13 +9,14 @@ require('dotenv').config();
 // Validation function for email and password
 const validateUserInput = (email, password) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
 
     const isEmailValid = emailRegex.test(email);
     const isPasswordValid = passwordRegex.test(password);
 
     return isEmailValid && isPasswordValid;
 };
+
 
 // POST endpoint for user registration
 router.post('/', async (req, res) => {
