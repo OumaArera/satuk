@@ -22,6 +22,13 @@ app.use('/users/ticket', require('./tickets/pendingTickets'));
 app.use('/users/tickets', require('./tickets/paidTickets'));
 app.use('/users/my-tickets', require('./tickets/myTickets'));
 app.use('/users/decline-ticket', require('./tickets/declineTicket'));
+app.use('/users/category', require('./vote/addCategories'));
+app.use('/users/category', require('./vote/getCategories'));
+app.use('/users/candidate', require('./vote/addCandidate'));
+app.use('/users/candidate', require('./vote/getCandidates'));
+app.use('/users/candidate', require('./vote/updateCandidate'));
+app.use('/users/vote', require('./vote/vote'));
+app.use('/users/vote', require('./vote/removeVoters'));
 
 
 app.get('/', (req, res) => {

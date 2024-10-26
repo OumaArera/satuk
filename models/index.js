@@ -5,8 +5,11 @@ const Nominations = require('./nominations')(sequelize, Sequelize);
 const Nominator = require('./nominator')(sequelize, Sequelize);
 const Nominees = require('./nominee')(sequelize, Sequelize);
 const Votes = require('./count')(sequelize, Sequelize); 
-const User = require('./users')(sequelize, Sequelize); // Ensure singular name matches your file
-const Ticket = require('./ticket')(sequelize, Sequelize); // Ensure singular name matches your file
+const User = require('./users')(sequelize, Sequelize); 
+const Ticket = require('./ticket')(sequelize, Sequelize); 
+const Category = require("./category")(sequelize, Sequelize); 
+const Candidate = require('./candidate')(sequelize, Sequelize); 
+const Voter = require('./voter')(sequelize, Sequelize); 
 
 const db = {
   sequelize,
@@ -16,7 +19,10 @@ const db = {
   Nominees,
   Votes, 
   User,  
-  Ticket 
+  Ticket,
+  Category,
+  Candidate,
+  Voter 
 };
 
 // Define associations
