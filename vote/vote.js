@@ -1,59 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const { Candidate, Voter } = require('../models');
-const CryptoJS = require('crypto-js');
+const { body, validationResult } = require('express-validator');
 const { sequelize } = require('../models'); 
-require('dotenv').config();
 
-// Decrypt function
-const decryptData = (iv, ciphertext) => {
-    const key = process.env.ENCRYPTION_KEY;
-    if (!key) {
-      throw new Error('Missing required encryption key');
-    }
-  
-    const decryptedBytes = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Utf8.parse(key), {
-      iv: CryptoJS.enc.Hex.parse(iv),
-      padding: CryptoJS.pad.Pkcs7,
-      mode: CryptoJS.mode.CBC,
-    });
-    let decryptedData = decryptedBytes.toString(CryptoJS.enc.Utf8);
-    decryptedData = decryptedData.replace(/\0+$/, ''); 
-    return JSON.parse(decryptedData);
-};
 
 // Endpoint to cast votes for candidates
-router.post('/', async (req, res) => {
-    const { iv, ciphertext } = req.body;
-
-    // Validate the presence of iv and ciphertext
-    if (!iv || !ciphertext) {
-        return res.status(400).json({
-            success: false,
-            message: 'Invalid data. Missing required fields',
-            statusCode: 400,
-        });
+router.post('/', [
+    // Validate input fields
+    body('voterEmail').isEmail().withMessage('Invalid email format'),
+    body('candidateIds').isArray({ min: 25, max: 25 }).withMessage('Voter must vote for exactly 25 candidates'),
+    body('categoryIds').isArray({ min: 25, max: 25 }).withMessage('Voter must vote for all 25 categories'),
+], async (req, res) => {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ success: false, errors: errors.array() });
     }
 
+    // Destructure the request body
+    const { voterEmail, candidateIds, categoryIds } = req.body;
+
     try {
-        // Decrypt and parse the data
-        const votersData = decryptData(iv, ciphertext);
-        const { voterEmail, candidateIds, categoryIds } = votersData;
-
-        // Validate the decrypted data
-        const emailPattern = /^[a-zA-Z0-9._%+-]+@(?:gmail\.com|yahoo\.com|outlook\.com|protonmail\.com)$/;
-        if (!emailPattern.test(voterEmail)) {
-            return res.status(400).json({ success: false, message: 'Invalid email format.' });
-        }
-
-        if (!Array.isArray(candidateIds) || candidateIds.length !== 25) {
-            return res.status(400).json({ success: false, message: 'Voter must vote for exactly 25 candidates.' });
-        }
-
-        if (!Array.isArray(categoryIds) || categoryIds.length !== 25) {
-            return res.status(400).json({ success: false, message: 'Voter must vote for all 25 categories.' });
-        }
-
         // Check if the voter has already voted
         const existingVoter = await Voter.findOne({ where: { email: voterEmail } });
         if (existingVoter) {
