@@ -6,8 +6,23 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Use CORS middleware
-app.use(cors());
+// Configure CORS to allow only specific origins
+const allowedOrigins = [
+  'https://satuk-awards.vercel.app',
+  'https://satuk-event-management.vercel.app'
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true // if you need to allow cookies/auth headers
+}));
+
 app.use(express.json());
 
 app.use('/users/nominate', require('./nominations/nominate'));
@@ -30,14 +45,14 @@ app.use('/users/candidate', require('./vote/updateCandidate'));
 app.use('/users/vote', require('./vote/vote'));
 app.use('/users/vote', require('./vote/removeVoters'));
 
-
 app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
 
 db.sequelize.sync().then(() => {
-    app.listen(port, () => {
-    });
-  }).catch(err => {
-    console.error('Unable to connect to the database:', err);
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
   });
+}).catch(err => {
+  console.error('Unable to connect to the database:', err);
+});
