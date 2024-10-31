@@ -3,23 +3,59 @@ const router = express.Router();
 const { Candidate, Voter } = require('../models');
 const { body, validationResult } = require('express-validator');
 const { sequelize } = require('../models'); 
+const CryptoJS = require('crypto-js');
+require('dotenv').config();
 
+// Decryption function
+const decryptData = (iv, ciphertext) => {
+  const key = process.env.SECRET_KEY;
+  if (!key) {
+    throw new Error('Missing required encryption key');
+  }
+
+  const decryptedBytes = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Utf8.parse(key), {
+    iv: CryptoJS.enc.Hex.parse(iv),
+    padding: CryptoJS.pad.Pkcs7,
+    mode: CryptoJS.mode.CBC,
+  });
+
+  let decryptedData = decryptedBytes.toString(CryptoJS.enc.Utf8);
+  decryptedData = decryptedData.replace(/\0+$/, ''); // Remove padding
+  return JSON.parse(decryptedData);
+};
 
 // Endpoint to cast votes for candidates
 router.post('/', [
-    // Validate input fields
-    body('voterEmail').isEmail().withMessage('Invalid email format'),
-    body('candidateIds').isArray({ min: 25, max: 25 }).withMessage('Voter must vote for exactly 25 candidates'),
-    body('categoryIds').isArray({ min: 25, max: 25 }).withMessage('Voter must vote for all 25 categories'),
+    // Validate that encrypted data is present
+    body('iv').notEmpty().withMessage('Missing initialization vector'),
+    body('ciphertext').notEmpty().withMessage('Missing ciphertext'),
 ], async (req, res) => {
-    // Check for validation errors
+    // Check for encryption-related validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
     }
 
-    // Destructure the request body
-    const { voterEmail, candidateIds, categoryIds } = req.body;
+    // Destructure iv and ciphertext from request body
+    const { iv, ciphertext } = req.body;
+
+    let decryptedData;
+    try {
+        // Decrypt data using the decryptData function
+        decryptedData = decryptData(iv, ciphertext);
+    } catch (error) {
+        console.error('Decryption error:', error);
+        return res.status(400).json({ success: false, message: 'Invalid or malformed encrypted data.' });
+    }
+
+    // Extract decrypted data fields
+    const { voterEmail, candidateIds, categoryIds } = decryptedData;
+
+    // Validate the decrypted data
+    const validationErrors = validationResult({ body: decryptedData });
+    if (!validationErrors.isEmpty()) {
+        return res.status(400).json({ success: false, errors: validationErrors.array() });
+    }
 
     try {
         // Check if the voter has already voted
@@ -31,7 +67,7 @@ router.post('/', [
             });
         }
 
-        // Start a transaction
+        // Start a transaction for vote processing
         await sequelize.transaction(async (transaction) => {
             // Iterate through candidateIds and categoryIds
             for (let i = 0; i < candidateIds.length; i++) {
@@ -53,11 +89,11 @@ router.post('/', [
                 }
             }
 
-            // Add voter to the Voter model
+            // Record the voter's email in the Voter model to prevent double voting
             await Voter.create({ email: voterEmail }, { transaction });
         });
 
-        // Return success response if transaction completes
+        // Return a success response if transaction completes
         return res.status(200).json({
             success: true,
             message: 'Votes cast successfully.',
