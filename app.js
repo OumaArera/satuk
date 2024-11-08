@@ -42,8 +42,9 @@ app.use('/users/category', require('./vote/getCategories'));
 app.use('/users/candidate', require('./vote/addCandidate'));
 app.use('/users/candidate', require('./vote/getCandidates'));
 app.use('/users/candidate', require('./vote/updateCandidate'));
-app.use('/users/vote', require('./vote/vote'));
-app.use('/users/vote', require('./vote/removeVoters'));
+app.use('/users/votees', require('./vote/vote'));
+app.use('/users/votees', require('./vote/removeVoters'));
+app.use('/users/voting', require('./vote/voting'));
 
 app.get('/', (req, res) => {
   res.send('Hello, World!');
